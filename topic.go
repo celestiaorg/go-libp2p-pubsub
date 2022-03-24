@@ -204,6 +204,7 @@ type RouterReady func(rt PubSubRouter, topic string) (bool, error)
 
 type PublishOptions struct {
 	ready RouterReady
+	local bool
 }
 
 type PubOpt func(pub *PublishOptions) error
@@ -283,7 +284,7 @@ func (t *Topic) Publish(ctx context.Context, data []byte, opts ...PubOpt) error 
 		}
 	}
 
-	return t.p.val.PushLocal(&Message{m, "", t.p.host.ID(), nil})
+	return t.p.val.PushLocal(&Message{m, "", t.p.host.ID(), nil, pub.local})
 }
 
 // WithReadiness returns a publishing option for only publishing when the router is ready.
@@ -291,6 +292,15 @@ func (t *Topic) Publish(ctx context.Context, data []byte, opts ...PubOpt) error 
 func WithReadiness(ready RouterReady) PubOpt {
 	return func(pub *PublishOptions) error {
 		pub.ready = ready
+		return nil
+	}
+}
+
+// WithLocalPublication option tells Publish to *only* notify local subscribers about a message.
+// This option prevents messages publication to peers.
+func WithLocalPublication(local bool) PubOpt {
+	return func(pub *PublishOptions) error {
+		pub.local = local
 		return nil
 	}
 }
