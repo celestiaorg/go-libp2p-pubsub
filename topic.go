@@ -320,6 +320,18 @@ func WithReadiness(ready RouterReady) PubOpt {
 	}
 }
 
+// WithLocalPublication returns a publishing option to notify in-process subscribers only.
+// It prevents message publication to mesh peers.
+// Useful in edge cases where the msg needs to be only delivered to the in-process subscribers,
+// e.g. not to spam the network with outdated msgs.
+// Should not be used specifically for in-process pubsubing.
+func WithLocalPublication(local bool) PubOpt {
+	return func(pub *PublishOptions) error {
+		pub.local = local
+		return nil
+	}
+}
+
 // WithSecretKeyAndPeerId returns a publishing option for providing a custom private key and its corresponding peer ID
 // This option is useful when we want to send messages from "virtual", never-connectable peers in the network
 func WithSecretKeyAndPeerId(key crypto.PrivKey, pid peer.ID) PubOpt {
