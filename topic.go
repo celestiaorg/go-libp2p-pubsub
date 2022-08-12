@@ -343,15 +343,6 @@ func WithSecretKeyAndPeerId(key crypto.PrivKey, pid peer.ID) PubOpt {
 	}
 }
 
-// WithLocalPublication option tells Publish to *only* notify local subscribers about a message.
-// This option prevents messages publication to peers.
-func WithLocalPublication(local bool) PubOpt {
-	return func(pub *PublishOptions) error {
-		pub.local = local
-		return nil
-	}
-}
-
 // Close closes down the topic. Will return an error unless there are no active event handlers or subscriptions.
 // Does not error if the topic is already closed.
 func (t *Topic) Close() error {
