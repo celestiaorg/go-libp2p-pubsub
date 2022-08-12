@@ -215,7 +215,7 @@ type ProvideKey func() (crypto.PrivKey, peer.ID)
 type PublishOptions struct {
 	ready     RouterReady
 	customKey ProvideKey
-	local bool
+	local     bool
 }
 
 type PubOpt func(pub *PublishOptions) error
@@ -339,7 +339,15 @@ func WithSecretKeyAndPeerId(key crypto.PrivKey, pid peer.ID) PubOpt {
 		pub.customKey = func() (crypto.PrivKey, peer.ID) {
 			return key, pid
 		}
+		return nil
+	}
+}
 
+// WithLocalPublication option tells Publish to *only* notify local subscribers about a message.
+// This option prevents messages publication to peers.
+func WithLocalPublication(local bool) PubOpt {
+	return func(pub *PublishOptions) error {
+		pub.local = local
 		return nil
 	}
 }
